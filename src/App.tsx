@@ -7,15 +7,16 @@ function App() {
   const [searchResult, setSearchResult] = useState("");
   const [chatResult, setChatResult] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingSearch, setIsLoadingSearch] = useState(false);
 
   const fetchDataToSearch = async (question: string) => {
     if (!question) return;
-    setIsLoading(true);
+    setIsLoadingSearch(true);
     try {
       const res = await geminiService.callSearch(question);
       setSearchResult(res.answer || "Không có kết quả trả về");
     } finally {
-      setIsLoading(false);
+      setIsLoadingSearch(false);
     }
   };
 
@@ -24,6 +25,7 @@ function App() {
     setIsLoading(true);
     try {
       const res = await geminiService.callChat(question);
+      setChatResult("checl res", res);
       setChatResult(res.answer || "Không có kết quả trả về");
     } finally {
       setIsLoading(false);
@@ -39,7 +41,7 @@ function App() {
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          disabled={isLoading}
+          disabled={isLoadingSearch || isLoading}
           type="text"
           className="w-full px-4 py-3 rounded-xl bg-gray-800 border border-gray-600 focus:border-blue-400 focus:outline-none text-lg disabled:opacity-50"
           placeholder="Nhập câu hỏi..."
@@ -48,10 +50,10 @@ function App() {
         <div className="flex gap-4">
           <button
             onClick={() => fetchDataToSearch(content)}
-            disabled={isLoading}
+            disabled={isLoadingSearch}
             className="px-6 py-3 bg-blue-600 hover:bg-blue-500 rounded-xl shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {isLoading && (
+            {isLoadingSearch && (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             )}
             Search
